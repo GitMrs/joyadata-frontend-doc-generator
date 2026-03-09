@@ -16,6 +16,7 @@ This skill generates Vue component usage documentation for joyadata component li
 - User asks about project setup / environment / initialization
 - User asks about API requests / axios usage
 - User provides MD file and wants usage instructions
+- User wants to convert re.md file format (convert_re)
 
 ## Supported Frameworks
 
@@ -25,8 +26,10 @@ This skill generates Vue component usage documentation for joyadata component li
 ## Documentation Structure
 
 ```
-.trae/skills/component-doc-generator/
+.trae/skills/joyadata-frontend-doc-generator/
 ├── SKILL.md                # Main skill file
+├── scripts/                # 工具脚本文件夹
+│   └── convert_re.py       # re.md 格式转换工具
 └── docs/                   # Component documentation folder
     ├── joyadata-setup.md    # 项目环境搭建指南
     ├── joyadata-table.md   # 表格组件
@@ -46,6 +49,7 @@ This skill generates Vue component usage documentation for joyadata component li
 | Document | Description |
 |----------|-------------|
 | [joyadata-setup](docs/joyadata-setup.md) | 项目环境搭建、初始化、接口规范 |
+| [convert_re](docs/joyadata-convert-re.md) | re.md 文件格式转换工具 |
 
 ### 组件文档
 
@@ -166,3 +170,47 @@ Key points to remember
 <!-- Tree/Aside -->
 <joyadata-aside :nav-val="treeData" @changeAside="changeAside" />
 ```
+
+## convert_re 工具
+
+### 功能说明
+
+`convert_re.py` 是一个用于将 re.md 文件转换为 key=value 格式的工具脚本。
+
+### 适用场景
+
+- 需要将表格配置的 JSON 数据转换为属性映射格式
+- 批量生成 prop 与 name 的对应关系
+- 数据格式迁移和转换
+
+### 输入格式
+
+```
+table	[{"prop": "name", "name": "名称"}, {"prop": "time", "name": "时间"}]
+```
+
+### 输出格式
+
+```
+table.name=名称
+table.time=时间
+```
+
+### 使用方法
+
+```bash
+python scripts/convert_re.py --input re.md
+```
+
+指定输出文件：
+
+```bash
+python scripts/convert_re.py --input re.md --output converted.txt
+```
+
+### 参数说明
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| --input | re.md | 输入文件路径 |
+| --output | converted_re.md | 输出文件路径 |
