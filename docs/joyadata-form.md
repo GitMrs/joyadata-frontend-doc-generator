@@ -116,7 +116,7 @@ export default {
 | `password` | 密码输入框 | `noShowPassword` |
 | `validPass` | 密码强度验证 | - |
 | `inputNumber` | 数字输入框 | `min`、`max`、`unit` |
-| `select` | 下拉选择框 | `data`、`multiple`、`groups`、`noClearable` |
+| `select` | 下拉选择框 | `data`、`multiple`、`groups`、`noClearable`、`noFilterable` |
 | `selectTree` | 树形选择器 | `vuex`、`data`、`multiple`、`normalizer`、`key`、`labelSlot`、`emptyText` |
 | `radio` | 单选框组 | `data`、`attrs` |
 | `checkbox` | 复选框组 (label 为 value) | `data` |
@@ -181,6 +181,7 @@ export default {
   ],
   multiple: false,        // 是否多选
   noClearable: false,      // 是否隐藏清空按钮
+  noFilterable: false,     // 是否禁用搜索功能
   groups: [                // 分组选项
     { label: '分组 1', data: [{ label: '1', value: '1' }] }
   ]
