@@ -17,6 +17,11 @@ This skill generates Vue component usage documentation for joyadata component li
 - User asks about API requests / axios usage
 - User provides MD file and wants usage instructions
 - User wants to convert re.md file format (convert_re)
+- User performs API integration using `this.$request._get`, `this.$request._post`, etc.
+- User asks how to use joyadata encapsulated request methods
+- User needs file upload/download operations
+- User needs to use utility methods like `deepClone`, `parseTime`, etc.
+- User needs to perform data storage operations (sessionStorage, localStorage)
 
 ## Supported Frameworks
 
@@ -62,6 +67,7 @@ This skill generates Vue component usage documentation for joyadata component li
 | [joyadata-aside](docs/joyadata-aside.md) | 目录树组件，基于 el-tree 封装 |
 | [joyadata-search](docs/joyadata-search.md) | 搜索组件，用于页面搜索和操作 |
 | [joyadata-tree](docs/joyadata-tree.md) | 树组件，基于 el-tree 封装 |
+| [joyadata-request](docs/joyadata-request.md) | 请求封装与公共方法 |
 
 ## Usage
 
