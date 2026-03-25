@@ -165,7 +165,193 @@ Key points to remember
 
 ---
 
-# Part 2: Vue2 国际化 (i18n)
+# Part 2: Request & Utility Methods (joyadata-request)
+
+## joyadata-request 使用指南
+
+### 何时使用
+
+当用户进行以下操作时，提供完整的请求方法和工具函数文档：
+- 进行接口联调，使用 `this.$request._get`、`this.$request._post` 等方法
+- 询问如何使用 joyadata 封装的请求方法
+- 需要进行文件上传/下载操作
+- 需要使用工具方法如 `deepClone`、`parseTime`、`debounce` 等
+- 需要进行数据存储操作（sessionStorage、localStorage）
+
+### 核心功能模块
+
+#### 1. 请求方法 (`this.$request`)
+
+```javascript
+// 在 Vue 组件中直接使用
+this.$request._get(url, params)        // GET 请求
+this.$request._post(url, data)         // POST 请求
+this.$request._delete(url, data)       // DELETE 请求
+this.$request._put(url, data)          // PUT 请求
+this.$request._uploadFile(url, formData)  // 文件上传
+this.$request._downFile(url, data, method) // 文件下载
+```
+
+**基础 URL**: `/dedp/v1` (已自动配置，使用时不需要添加前缀)
+
+**示例**:
+```javascript
+// GET - 查询列表
+const { data } = await this.$request._get('/dsc/list', { keywords: 'test' })
+
+// POST - 创建数据
+await this.$request._post('/dsc/save', { name: 'test', type: 1 })
+
+// DELETE - 批量删除
+const ids = selectData.map(item => item.id)
+await this.$request._delete('/dsc/delete', ids)
+
+// PUT - 更新数据
+await this.$request._put('/dsc/update/123', { name: 'updated' })
+
+// 文件上传
+const formData = { file: fileElement.files[0], name: 'test.txt' }
+await this.$request._uploadFile('/file/upload', formData)
+
+// 文件下载
+const res = await this.$request._downFile('/dsc/export', params, 'post')
+```
+
+#### 2. 工具方法 (从 `joyadata-coms/src/utils` 引入)
+
+```javascript
+import {
+  deepClone,       // 深拷贝
+  parseTime,       // 时间格式化
+  downloadFile,    // Blob 下载
+  downLoad,        // URL 下载
+  debounce,        // 防抖
+  formateTable,    // 表格数据格式化
+  conver,          // 文件大小转换
+  isType,          // 类型判断
+  isArray, isObject, checkType,
+  getToday,        // 时间工具
+  getWeekday,
+  getMonth,
+  getYear
+} from 'joyadata-coms/src/utils'
+```
+
+**常用示例**:
+```javascript
+// 深拷贝 - 避免引用问题
+const selectData = deepClone(tableRef.selectData || [])
+
+// 时间格式化
+parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')  // "2024-03-20 10:30:00"
+parseTime(new Date(), '{y}-{m}-{d}')              // "2024-03-20"
+
+// 防抖
+const handleSearch = debounce(() => {
+  this.searchFn()
+}, 500)
+
+// 表格空值处理
+formateTable('', '-')        // "-"
+formateTable(null, '-')      // "-"
+formateTable(0, '-')         // 0
+
+// 文件大小
+conver(1024)          // "1KB"
+conver(1048576)       // "1MB"
+
+// 时间工具
+getToday(7)           // 7 天前的日期 "2024-03-13"
+getWeekday('s', 1)    // 下周一
+getMonth('s', -1)     // 上月第一天
+```
+
+#### 3. 存储方法 (从 `joyadata-coms/src/utils/auth` 引入)
+
+```javascript
+import {
+  getToken, setToken, removeToken,           // Token 管理
+  getSession, setSession, removeSession,     // SessionStorage
+  getLocalStorage, setLocalStorage, removeLocalStorage  // LocalStorage
+} from 'joyadata-coms/src/utils/auth'
+```
+
+**使用示例**:
+```javascript
+// SessionStorage
+setSession({ key: 'value' }, 'myKey')
+const data = getSession('myKey')
+removeSession('myKey')
+
+// LocalStorage
+setLocalStorage({ key: 'value' }, 'myKey')
+const data = getLocalStorage('myKey')
+removeLocalStorage('myKey')
+
+// Token
+setToken('token123')
+const token = getToken()
+```
+
+### 处理流程
+
+当用户询问请求或工具方法时：
+
+1. **识别需求类型**
+   - 请求相关：查看 [joyadata-request](docs/joyadata-request.md) 文档
+   - 工具方法：查看公共方法部分
+   - 存储操作：查看 auth.js 相关方法
+
+2. **提供完整示例**
+   - 包含引入方式
+   - 包含实际可运行的代码
+   - 说明参数和返回值
+
+3. **最佳实践**
+   - GET 请求用 params，POST/PUT/DELETE 用 data
+   - 文件上传需要 FormData（方法会自动创建）
+   - 使用 deepClone 避免引用问题
+   - 使用 parseTime 统一时间格式
+   - 使用 debounce 优化搜索性能
+
+### 常见组合模式
+
+**请求 + 表格**:
+```javascript
+async fetchData() {
+  const { data } = await this.$request._get('/api/list', this.params)
+  this.tableData = data
+}
+```
+
+**请求 + 消息提示**:
+```javascript
+async handleSave() {
+  await this.$request._post('/api/save', this.form)
+  this.$message.success('保存成功')
+  this.fetchData()  // 刷新列表
+}
+```
+
+**深拷贝 + 批量操作**:
+```javascript
+const selectData = deepClone(tableRef.selectData || [])
+const ids = selectData.map(item => item.id)
+await this.$request._delete('/api/delete', ids)
+```
+
+**时间格式化 + 表格**:
+```javascript
+{
+  prop: 'createTime',
+  name: '创建时间',
+  formatter: (row) => parseTime(row.createTime, '{y}-{m}-{d}')
+}
+```
+
+---
+
+# Part 3: Vue2 国际化 (i18n)
 
 ## 触发条件
 
@@ -329,7 +515,7 @@ export const data = {
 
 ---
 
-# Part 3: Tools
+# Part 4: Tools
 
 ## convert_re 工具
 
